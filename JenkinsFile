@@ -2,81 +2,63 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE = "Sonar"    // Jenkins Sonar tool name
-        DOCKERHUB_USER = "mokshitgupta"
-        DOCKER_IMAGE = "docappsystem"
-    }
-
-    parameters {
-        string(name: 'DOCKER_TAG', defaultValue: 'latest', description: 'Docker image tag for build & push')
+        REGISTRY = "docker.io"
+        IMAGE_NAME = "mokshitgupta/docapp"
+        GITOPS_REPO = "git@github.com:mokshitgupta/docapp-gitops.git"
+        DEPLOYMENT_FILE = "k8s/deployment.yaml"
     }
 
     stages {
-
-        stage('Workspace Cleanup') {
-            steps {
-                cleanWs()
-            }
-        }
-
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/mokshitgupta/docapp-system.git'
             }
         }
 
-        stage('Trivy: Filesystem Scan') {
+        stage('Code Quality - SonarQube') {
             steps {
-                sh '''
-                trivy fs --exit-code 0 --severity HIGH,CRITICAL .
-                '''
-            }
-        }
-
-        stage('OWASP: Dependency Check') {
-            steps {
-                sh '''
-                dependency-check.sh --project "docappsystem" --scan .
-                '''
-            }
-        }
-
-        stage('SonarQube: Code Analysis') {
-            steps {
-                withSonarQubeEnv('Sonar') {
-                    sh '''
-                    sonar-scanner \
-                      -Dsonar.projectKey=docappsystem \
-                      -Dsonar.sources=. \
-                      -Dsonar.host.url=$SONAR_HOST_URL \
-                      -Dsonar.login=$SONAR_AUTH_TOKEN
-                    '''
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
                 }
             }
         }
 
-        stage('SonarQube: Quality Gate') {
+        stage('Dependency Scan - OWASP') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                sh 'dependency-check.sh --scan . --format ALL --out dependency-check-report'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    IMAGE_TAG = "${BUILD_NUMBER}"
+                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
 
-        stage('Docker: Build Image') {
+        stage('Push Docker Image') {
             steps {
-                sh '''
-                docker build -t $DOCKERHUB_USER/$DOCKER_IMAGE:$DOCKER_TAG .
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                }
             }
         }
 
-        stage('Docker: Push to DockerHub') {
+        stage('Update GitOps Repo') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                script {
                     sh '''
-                    echo "$PASS" | docker login -u "$USER" --password-stdin
-                    docker push $DOCKERHUB_USER/$DOCKER_IMAGE:$DOCKER_TAG
+                        rm -rf docapp-gitops
+                        git clone ${GITOPS_REPO}
+                        cd docapp-gitops
+                        sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}|" ${DEPLOYMENT_FILE}
+                        git config user.email "jenkins@ci.com"
+                        git config user.name "Jenkins CI"
+                        git commit -am "Update image tag to ${BUILD_NUMBER}"
+                        git push origin main
                     '''
                 }
             }
@@ -84,11 +66,13 @@ pipeline {
     }
 
     post {
-        success {
-            echo " Build & Push Completed Successfully"
+        always {
+            archiveArtifacts artifacts: '**/dependency-check-report/*.*', allowEmptyArchive: true
         }
         failure {
-            echo " Build Failed. Check logs."
+            mail to: 'mokshit029@example.com',
+                 subject: "Build Failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Check Jenkins for details."
         }
     }
 }
