@@ -1,0 +1,15 @@
+<div class="card">
+    <div class="card-header">
+        <h5>Input Google Meet Link</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{% url 'input_meet_link' appointment.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="meet_link">Google Meet Link</label>
+                <input type="url" class="form-control" id="meet_link" name="meet_link" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Update Link</button>
+        </form>
+    </div>
+</div> 

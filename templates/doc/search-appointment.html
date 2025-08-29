@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+
+<div class="content container-fluid">
+
+    <div class="page-header">
+    <div class="row align-items-center">
+    <div class="col">
+    <h3 class="page-title">Search Appointments</h3>
+    <ul class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'doctor_home' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Search Aappointment</li>
+    </ul>
+    </div>
+    
+    </div>
+    </div>
+    
+    <div class="row">
+    <div class="col-sm-12">
+        <div class="card-block">
+            <h4 class="sub-title">Search Appointment </h4>
+            <form  method="GET">
+                
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Search(By Fullname/Appointment Number)</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="query" name="query" class="form-control" required="">
+                    </div>
+                </div>
+               
+             
+                <button type="submit" class="btn btn-primary btn-user btn-block">Search</button>    
+                        </form>
+                    
+                        </div>
+    <div class="card card-table">
+
+    <div class="card-body">
+        {% if messages %}
+        {% for message in messages %}
+         {% if message.tags == 'error' %}
+       <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{message}}
+     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+         </button>
+          </div>
+       {% endif %}
+        {% endfor %}
+       {% endif %}
+           {% if messages %}
+        {% for message in messages %}
+         {% if message.tags == 'success' %}
+       <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{message}}
+     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+         </button>
+          </div>
+       {% endif %}
+        {% endfor %}
+       {% endif %}
+    <div class="table-responsive">
+    <table class="table table-hover table-center mb-0 datatable">
+    <thead>
+    <tr>
+        {% if patient %}
+    <th>Appointment Number</th>
+    <th>Full Name</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Created At</th>
+    <th>Status</th>
+    <th>Online Consultation</th>
+    <th class="text-right">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for p in patient %}
+    <tr>
+        <td><strong>{{p.appointmentnumber}}</strong></td>
+        <td>{{p.fullname}}</td>
+        <td>{{p.date_of_appointment}}</td>
+        <td>{{p.time_of_appointment}}</td>
+        <td>{{p.created_at}}</td>
+        <td>
+            {% if p.status == '0' %}
+                <span class="status-badge status-pending">Pending</span>
+            {% elif p.status == 'Approved' %}
+                <span class="status-badge status-approved">Approved</span>
+            {% elif p.status == 'Cancelled' %}
+                <span class="status-badge status-cancelled">Cancelled</span>
+            {% elif p.status == 'Completed' %}
+                <span class="status-badge status-completed">Completed</span>
+            {% else %}
+                <span class="status-badge status-pending">{{p.status}}</span>
+            {% endif %}
+        </td>
+        <td>
+            {% for oc in online_consultations %}
+                {% if oc.appointment.id == p.id %}
+                    <a href="{{ oc.meeting_link }}" target="_blank">Join Meeting</a>
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td class="text-right">
+            <a href="{% url 'patientappointmentdetails' p.id %}" class="btn btn-primary btn-view">
+                <i class="fas fa-eye"></i> View Details
+            </a>
+        </td>
+    </tr> {% endfor %}
+   
+    </tbody>
+    </table>
+    {% else %}
+    {% if query %}
+        <p style="font-size: 20px;color: blue;text-align: center;">No records found for: "{{ query }}"</p>
+    
+    {% endif %}
+
+    {% endif %}
+    
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+
+{% endblock %}

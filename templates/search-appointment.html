@@ -1,0 +1,488 @@
+{% extends 'userbase.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Custom styles for Search Appointment page */
+    :root {
+        --primary: #2c7be5;
+        --primary-dark: #1a68d1;
+        --secondary: #6c757d;
+        --success: #00d97e;
+        --danger: #e63757;
+        --warning: #f6c343;
+        --info: #39afd1;
+        --light: #f9fbfd;
+        --dark: #12263f;
+        --white: #ffffff;
+        --border-color: #e3ebf6;
+    }
+
+    /* Page Header Styling */
+    .page-header {
+        position: relative;
+        background: linear-gradient(rgba(9, 30, 62, 0.85), rgba(9, 30, 62, 0.85)), url('{% static "assets/img/header-bg.jpg" %}') center center no-repeat;
+        background-size: cover;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2.5rem !important;
+    }
+
+    .page-header h1 {
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb-item a {
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--primary) !important;
+    }
+
+    .breadcrumb-item.active {
+        font-weight: 600;
+    }
+
+    /* Search Section Styling */
+    .search-section {
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .search-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(18, 38, 63, 0.1);
+    }
+
+    .section-title {
+        position: relative;
+        display: inline-block;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--dark);
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -8px;
+        height: 3px;
+        width: 50px;
+        background: var(--primary);
+    }
+
+    .form-control {
+        height: 50px;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #d2ddec;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.25);
+    }
+
+    .search-input-group {
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        color: var(--primary);
+        pointer-events: none;
+    }
+
+    .btn-search {
+        height: 50px;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-search:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .btn-search i {
+        margin-right: 8px;
+    }
+
+    /* Results Table Styling */
+    .results-section {
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);
+        padding: 1.5rem;
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .datatable {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .datatable thead th {
+        background-color: #f5f8fb;
+        color: var(--dark);
+        font-weight: 600;
+        padding: 1rem;
+        border-bottom: 2px solid #e3ebf6;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+
+    .datatable tbody tr {
+        transition: all 0.2s;
+    }
+
+    .datatable tbody tr:hover {
+        background-color: rgba(44, 123, 229, 0.05);
+    }
+
+    .datatable td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #e3ebf6;
+        color: #5e6e82;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 50rem;
+    }
+
+    .status-pending {
+        background-color: #fff8e1;
+        color: #ff9800;
+    }
+
+    .status-approved {
+        background-color: #e8f5e9;
+        color: #4caf50;
+    }
+
+    .status-cancelled {
+        background-color: #ffebee;
+        color: #f44336;
+    }
+
+    .status-completed {
+        background-color: #e3f2fd;
+        color: #2196f3;
+    }
+
+    .btn-view {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-view i {
+        margin-right: 5px;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    .alert-warning {
+        background-color: #fff8e1;
+        color: #ff9800;
+        border-left: 4px solid #ff9800;
+    }
+
+    .alert-info {
+        background-color: #e3f2fd;
+        color: #2196f3;
+        border-left: 4px solid #2196f3;
+    }
+
+    .alert .close {
+        color: inherit;
+        opacity: 0.8;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #d2ddec;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+        font-size: 1.25rem;
+        color: #95aac9;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 3rem 0 !important;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem !important;
+        }
+        
+        .search-section, .results-section {
+            padding: 1.5rem;
+        }
+        
+        .datatable thead th {
+            padding: 0.75rem;
+        }
+        
+        .datatable td {
+            padding: 0.75rem;
+        }
+    }
+
+    /* Animation Classes */
+    .fadeIn {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slideInDown {
+        animation: slideInDown 0.5s ease-in-out;
+    }
+
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container py-5">
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Search Appointment</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb text-uppercase mb-0">
+                <li class="breadcrumb-item"><a class="text-white" href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item text-primary active" aria-current="page">Search Appointment</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Appointment Search Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- Search Form Section -->
+                <div class="search-section wow fadeIn" data-wow-delay="0.1s">
+                    <h4 class="section-title">Search Appointment</h4>
+                    <form method="GET">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <div class="col-md-9 mb-3 mb-md-0">
+                                <label class="form-label fw-bold mb-2">Search by Full Name or Appointment Number</label>
+                                <div class="search-input-group">
+                                    <input type="text" id="query" name="query" class="form-control" placeholder="Enter name or appointment number..." required>
+                                    <div class="search-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary btn-search w-100">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Results Section -->
+                <div class="results-section wow fadeIn" data-wow-delay="0.2s">
+                    <!-- Alert Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'error' %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i> {{message}}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'info' %}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i> {{message}}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Results Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-center mb-0 datatable">
+                            {% if patient %}
+                                <thead>
+                                    <tr>
+                                        <th>Appointment Number</th>
+                                        <th>Full Name</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Created At</th>
+                                        <th>Status</th>
+                                        <th>Online Consultation</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in patient %}
+                                        <tr>
+                                            <td><strong>{{p.appointmentnumber}}</strong></td>
+                                            <td>{{p.fullname}}</td>
+                                            <td>{{p.date_of_appointment}}</td>
+                                            <td>{{p.time_of_appointment}}</td>
+                                            <td>{{p.created_at}}</td>
+                                            <td>
+                                                {% if p.status == '0' %}
+                                                    <span class="status-badge status-pending">Pending</span>
+                                                {% elif p.status == 'Approved' %}
+                                                    <span class="status-badge status-approved">Approved</span>
+                                                {% elif p.status == 'Cancelled' %}
+                                                    <span class="status-badge status-cancelled">Cancelled</span>
+                                                {% elif p.status == 'Completed' %}
+                                                    <span class="status-badge status-completed">Completed</span>
+                                                {% else %}
+                                                    <span class="status-badge status-pending">{{p.status}}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% for oc in online_consultations %}
+                                                    {% if oc.appointment.id == p.id %}
+                                                        <a href="{{ oc.meeting_link }}" target="_blank">Join Meeting</a>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td class="text-right">
+                                                <a href="{% url 'viewappointmentdetails' p.id %}" class="btn btn-primary btn-view">
+                                                    <i class="fas fa-eye"></i> View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            {% else %}
+                                {% if query %}
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <p class="empty-state-text">No records found for: "<strong>{{ query }}</strong>"</p>
+                                        <p>Try searching with a different name or appointment number</p>
+                                    </div>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <p class="empty-state-text">Enter a search term to find appointments</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Appointment Search End -->
+
+<script>
+    // Add Font Awesome if not already included in userbase.html
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+    
+    // Close alert messages
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeButtons = document.querySelectorAll('.alert .close');
+        closeButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const alert = this.parentElement;
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 300);
+            });
+        });
+        
+        // Add animation classes if WOW.js is not available
+        if (typeof WOW === 'undefined') {
+            document.querySelectorAll('.wow').forEach(function(element) {
+                element.classList.remove('wow');
+                element.classList.add('animated');
+            });
+        }
+    });
+</script>
+{% endblock %}

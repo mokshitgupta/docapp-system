@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #0463FA;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+        }
+        .appointment-details {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Appointment Confirmation</h2>
+    </div>
+    
+    <div class="content">
+        <p>Dear {{ appointment.fullname }},</p>
+        
+        <p>Your appointment has been successfully scheduled. Here are your appointment details:</p>
+        
+        <div class="appointment-details">
+            <p><strong>Appointment Number:</strong> #{{ appointment.appointmentnumber }}</p>
+            <p><strong>Doctor:</strong> Dr. {{ doctor_name }}</p>
+            <p><strong>Specialization:</strong> {{ specialization }}</p>
+            <p><strong>Date:</strong> {{ appointment.date_of_appointment }}</p>
+            <p><strong>Time:</strong> {{ appointment.time_of_appointment }}</p>
+            {% if appointment.additional_msg %}
+            <p><strong>Additional Message:</strong> {{ appointment.additional_msg }}</p>
+            {% endif %}
+        </div>
+        
+        <p>Please arrive 10 minutes before your scheduled appointment time. If you need to reschedule or cancel your appointment, please contact us as soon as possible.</p>
+        
+        <p>Best regards,<br>Your Healthcare Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message, please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

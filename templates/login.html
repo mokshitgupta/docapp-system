@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAS - Login | Doctor Appointment System</title>
+    
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --secondary: #6c757d;
+            --success: #00d97e;
+            --danger: #e63757;
+            --warning: #f6c343;
+            --info: #39afd1;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --white: #ffffff;
+            --border-color: #e3ebf6;
+            --body-bg: #f9fbfd;
+            --body-color: #12263f;
+            --input-bg: #fff;
+            --input-border: #d2ddec;
+            --input-focus-border: #2c7be5;
+            --input-placeholder: #95aac9;
+            --shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);
+            --shadow-sm: 0 0.125rem 0.25rem rgba(18, 38, 63, 0.075);
+            --shadow-lg: 0 1rem 3rem rgba(18, 38, 63, 0.1);
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--body-color);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1140px;
+            padding: 0 15px;
+            margin: 0 auto;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            padding: 2rem 0;
+        }
+
+        .loginbox {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .loginbox {
+                flex-direction: row;
+            }
+        }
+
+        .login-left {
+            background: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+            color: var(--white);
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .login-left {
+                width: 40%;
+            }
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-left::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-left h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .login-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-left .features {
+            margin-top: 2rem;
+        }
+
+        .login-left .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .login-left .feature-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .login-right {
+            padding: 3rem 2rem;
+            flex: 1;
+        }
+
+        .login-right-wrap {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-right-wrap h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .account-subtitle {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+            position: relative;
+        }
+
+        .alert-warning {
+            background-color: #fff8e1;
+            border: 1px solid #ffe0b2;
+            color: #ff9800;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #4caf50;
+        }
+
+        .alert .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: 0;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 50px;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--body-color);
+            background-color: var(--input-bg);
+            background-clip: padding-box;
+            border: 1px solid var(--input-border);
+            border-radius: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--input-focus-border);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: var(--input-placeholder);
+            opacity: 1;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group-append {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: var(--transition);
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary {
+            color: var(--white);
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            background-color: transparent;
+            border-color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            color: var(--white);
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .divider::before {
+            margin-right: 1rem;
+        }
+
+        .divider::after {
+            margin-left: 1rem;
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .login-left, .login-right {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="login-wrapper">
+            <div class="container">
+                <div class="loginbox">
+                    <div class="login-left">
+                        <h1>Doctor Appointment System</h1>
+                        <p>Streamline your healthcare scheduling with our intuitive appointment system</p>
+                        
+                        <div class="features">
+                            <div class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-calendar-check"></i></span>
+                                <span>Easy appointment scheduling</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-user-md"></i></span>
+                                <span>Connect with qualified doctors</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-bell"></i></span>
+                                <span>Appointment reminders</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-history"></i></span>
+                                <span>Medical history tracking</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="login-right">
+                        <div class="login-right-wrap">
+                            <h2>Login</h2>
+                            <p class="account-subtitle">Access to our dashboard</p>
+                            
+                            <!-- Django template for messages -->
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags == 'error' %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        {{message}}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags == 'success' %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{message}}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <form action="{% url 'doLogin' %}" method="POST">
+                                {% csrf_token %}
+                                
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="email" class="form-control" placeholder="Your Email Address" name="email" required>
+                                        <div class="input-group-append">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" placeholder="Password" name="password" id="password" required>
+                                        <div class="input-group-append" onclick="togglePassword()">
+                                            <i class="fas fa-eye" id="togglePassword"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <a href="#" class="forgot-link">Forgot Password?</a>
+                                
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div class="divider">OR</div>
+                            
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary">
+                                    <a href="{% url 'docsignup' %}">
+                                        <i class="fas fa-user-md mr-2"></i> Doctor Signup
+                                    </a>
+                                </button>
+                                
+                                <button class="btn btn-outline-primary">
+                                    <a href="{% url 'index' %}">
+                                        <i class="fas fa-home mr-2"></i> Home Page
+                                    </a>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePassword');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Close alert messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('.alert .close');
+            closeButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const alert = this.parentElement;
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 300);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="content container-fluid">
+
+    <div class="page-header">
+    <div class="row align-items-center">
+    <div class="col">
+    <h3 class="page-title">Appointment Details</h3>
+    <ul class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'doctor_home' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active">View Appointment</li>
+    </ul>
+    </div>
+    
+    </div>
+    </div>
+    
+    <div class="row">
+    <div class="col-sm-12">
+    <div class="card card-table">
+    <div class="card-body">
+        {% if messages %}
+        {% for message in messages %}
+         {% if message.tags == 'error' %}
+       <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{message}}
+     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+         </button>
+          </div>
+       {% endif %}
+        {% endfor %}
+       {% endif %}
+           {% if messages %}
+        {% for message in messages %}
+         {% if message.tags == 'success' %}
+       <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{message}}
+     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+         </button>
+          </div>
+       {% endif %}
+        {% endfor %}
+       {% endif %}
+    <div class="table-responsive">
+    <table class="table table-hover table-center mb-0 datatable">
+      {% for i in patientdetails %}
+      <tr><label style="font-size: medium;text-align: center;">Appointment Number: {{i.appointmentnumber}}</label></tr>
+        <tr>
+            
+            <th>Patient Name</th>
+            <td>{{i.fullname}}</td>
+            <th>Patient Contact Number</th>
+            <td>{{i.mobilenumber}}</td>
+          </tr>
+          <tr>
+            
+            <th>Patient Email</th>
+            <td>{{i.email}}</td>
+            <th>Date of Appointment</th>
+            <td>{{i.date_of_appointment}}</td>
+          </tr>
+          <tr>
+            
+            <th>Date of Time</th>
+            <td>{{i.time_of_appointment}}</td>
+            <th>Message</th>
+            <td>{{i.additional_msg}}</td>
+          </tr>
+          <tr>
+                              
+            {% if i.status == '0' %}
+            <th>Doctor Remark</th>
+            <td>Not Updatet Yet</td>
+            {% else %}
+            <tr>
+            <th>Doctor Remark</th>
+            <td>{{ i.remark}}</td>{% endif %}
+            
+              {% if i.status == '0' %}
+              <th>Staus</th>
+              <td>Not Updatet Yet</td>
+              {% else %}
+              <th>Status</th>
+              <td>{{ i.status}}</td> {% endif %}
+              </tr>
+          
+              <tr>
+                {% if i.status == 'Completed' %}
+                <th>Prescribed Medicine</th>
+                <td>{{ i.prescription}}</td>
+                {% else %}
+                <th>Prescribed Medicine</th>
+                <td>Not Prescribed Yet</td> {% endif %}
+                </tr>
+                <tr>
+                  {% if i.status == 'Completed' %}
+                  <th>Recommended Test</th>
+                  <td>{{ i.recommendedtest}}</td>
+                  {% else %}
+                  <th>Recommended Test</th>
+                  <td>Not Recommended Yet</td> {% endif %}
+                  </tr>
+    </table>
+    {% if i.status == '0'  %}
+    
+              </div>
+              <p align="center"  style="padding-top: 20px">                            
+                <button class="btn btn-primary waves-effect waves-light w-lg" data-toggle="modal" data-target="#myModal">Take Action</button></p>{% endif %}  
+
+              <!-- Online Consultation Section -->
+              <div class="card mt-4">
+                  <div class="card-header">
+                      <h4 class="card-title">Online Consultation</h4>
+                  </div>
+                  <div class="card-body">
+                      {% if i.online_consultations.exists %}
+                          {% with consultation=i.online_consultations.first %}
+                              <div class="table-responsive">
+                                  <table class="table">
+                                      <tr>
+                                          <th>Meeting Link:</th>
+                                          <td>
+                                              <a href="{{consultation.meeting_link}}" target="_blank" class="btn btn-primary btn-sm">
+                                                  Join Meeting
+                                              </a>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <th>Meeting ID:</th>
+                                          <td>{{consultation.meeting_id}}</td>
+                                      </tr>
+                                      <tr>
+                                          <th>Scheduled At:</th>
+                                          <td>{{consultation.scheduled_at}}</td>
+                                      </tr>
+                                  </table>
+                              </div>
+                              <button class="btn btn-info btn-sm mt-3" data-toggle="modal" data-target="#updateMeetModal">
+                                  Update Meeting Link
+                              </button>
+                          {% endwith %}
+                      {% else %}
+                          <div class="alert alert-info">
+                              No online consultation scheduled yet.
+                          </div>
+                          <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addMeetModal">
+                              Schedule Online Consultation
+                          </button>
+                      {% endif %}
+                  </div>
+              </div>
+
+              <!-- Add Meeting Modal -->
+              <div class="modal fade" id="addMeetModal" tabindex="-1" role="dialog" aria-labelledby="addMeetModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="addMeetModalLabel">Schedule Online Consultation</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+                          </div>
+                          <form method="POST" action="{% url 'input_meet_link' i.id %}">
+                              {% csrf_token %}
+                              <div class="modal-body">
+                                  <div class="form-group">
+                                      <label for="meet_link">Google Meet Link:</label>
+                                      <input type="url" class="form-control" id="meet_link" name="meet_link" required>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary">Schedule</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Update Meeting Modal -->
+              <div class="modal fade" id="updateMeetModal" tabindex="-1" role="dialog" aria-labelledby="updateMeetModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="updateMeetModalLabel">Update Meeting Link</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+                          </div>
+                          <form method="POST" action="{% url 'input_meet_link' i.id %}">
+                              {% csrf_token %}
+                              <div class="modal-body">
+                                  <div class="form-group">
+                                      <label for="meet_link">New Google Meet Link:</label>
+                                      <input type="url" class="form-control" id="meet_link" name="meet_link" required>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary">Update</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                   <div class="modal-content">
+                    <div class="modal-header">
+                                                                  <h5 class="modal-title" id="exampleModalLabel">Take Action</h5>
+                                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                      <span aria-hidden="true">&times;</span>
+                                                                  </button>
+                                                              </div>
+                                                              <div class="modal-body">
+                                                              <table class="table table-bordered table-hover data-tables">
+              
+                                               <form method="POST" action="{% url 'patient_appointment_details_remark'%}">
+                                                {% csrf_token %}
+              
+                                              
+                                             
+                   <tr>
+                  <th>Remark :</th>
+                  <td>
+                  <textarea name="remark" placeholder="Remark" rows="12" cols="14" class="form-control wd-450" required="true"></textarea></td>
+                  <input type="text" value="{% for i in patientdetails %}{{i.id}}{% endfor %}" name="pat_id" id="pat_id" class="form-control" required="" hidden>
+                </tr> 
+                   
+                <tr>
+                  <th>Status :</th>
+                  <td>
+              
+                 <select name="status" class="form-control wd-450" required="true" >
+                   <option value="Approved" selected="true">Approved</option>
+                   <option value="Cancelled">Cancelled</option>
+                   
+                 </select></td>
+                </tr>
+              </table>
+              </div>
+              <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="submit" name="submit" class="btn btn-primary">Update</button>
+                
+                </form>
+                
+              
+              </div>
+              
+                                    
+                                      </div>
+                                  </div>
+              
+                          </div>{% endfor %}
+              
+                        </div>
+    
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+
+{% endblock %}

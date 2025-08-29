@@ -1,0 +1,263 @@
+{% extends 'userbase.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Modern Hero Section with Overlay -->
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn position-relative" data-wow-delay="0.1s" 
+     style="background: linear-gradient(rgba(6, 88, 149, 0.8), rgba(6, 88, 149, 0.8)), url('{% static '.\img\header-page.jpg' %}') center center no-repeat; background-size: cover;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="display-3 text-white mb-3 animated slideInDown fw-bold">Book Your Appointment</h1>
+                <p class="text-white opacity-75 mb-4 animated slideInDown">Schedule a visit with our qualified healthcare professionals</p>
+                <nav aria-label="breadcrumb animated slideInDown">
+                    <ol class="breadcrumb bg-transparent p-0">
+                        <li class="breadcrumb-item"><a class="text-white text-decoration-none" href="#"><i class="fas fa-home me-2"></i>Home</a></li>
+                        <li class="breadcrumb-item"><a class="text-white text-decoration-none" href="#">Services</a></li>
+                        <li class="breadcrumb-item text-primary active fw-bold" aria-current="page">Appointment</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="wave-shape position-absolute bottom-0 start-0 w-100" style="height: 40px; overflow: hidden;">
+    
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Appointment Section with Enhanced UI -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="position-relative h-100">
+                    <div class="position-relative z-index-1 p-5 bg-white shadow-lg rounded-lg">
+                        <span class="badge bg-primary text-white px-3 py-2 rounded-pill mb-3">Make An Appointment</span>
+                        <h2 class="mb-4 fw-bold">Your Health Is Our Top Priority</h2>
+                        <p class="mb-4 text-muted">Schedule a consultation with our experienced doctors to receive personalized care and treatment plans tailored to your specific health needs.</p>
+                        
+                        {% for i in page %}
+                        <div class="contact-info">
+                            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle bg-primary" style="width: 60px; height: 60px;">
+                                            <i class="fa fa-phone-alt text-white fa-lg"></i>
+                                        </div>
+                                        <div class="ms-4">
+                                            <p class="text-muted mb-1 small text-uppercase">Call Us Anytime</p>
+                                            <h5 class="mb-0 fw-bold">+{{i.mobilenumber}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle bg-primary" style="width: 60px; height: 60px;">
+                                            <i class="fa fa-envelope-open text-white fa-lg"></i>
+                                        </div>
+                                        <div class="ms-4">
+                                            <p class="text-muted mb-1 small text-uppercase">Email Us</p>
+                                            <h5 class="mb-0 fw-bold">{{i.email}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle bg-primary" style="width: 60px; height: 60px;">
+                                            <i class="fa fa-map-marker-alt text-white fa-lg"></i>
+                                        </div>
+                                        <div class="ms-4">
+                                            <p class="text-muted mb-1 small text-uppercase">Visit Our Location</p>
+                                            <h5 class="mb-0 fw-bold">{{i.address}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="mt-5">
+                            <h5 class="mb-3 fw-bold">Working Hours</h5>
+                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                                <span class="text-muted">Monday - Friday</span>
+                                <span class="fw-bold">8:00 AM - 8:00 PM</span>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                                <span class="text-muted">Saturday</span>
+                                <span class="fw-bold">9:00 AM - 6:00 PM</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Sunday</span>
+                                <span class="fw-bold">10:00 AM - 4:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="bg-white rounded-lg shadow-lg h-100 p-5">
+                    <h3 class="mb-4 fw-bold text-center">Book Your Appointment Now</h3>
+                    
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            {% if message.tags == 'error' %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i> {{message}}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+                            {% if message.tags == 'success' %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i> {{message}}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" action="{% url 'appointment' %}" class="appointment-form">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" placeholder="Your Name" name="fullname" required="true">
+                                    <label for="name"><i class="fas fa-user text-primary me-2"></i>Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" placeholder="Your Email" name="email" pattern="[^ @]*@[^ @]*" required="true">
+                                    <label for="email"><i class="fas fa-envelope text-primary me-2"></i>Your Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="mobile" placeholder="Your Mobile" name="mobilenumber" maxlength="10" required="true">
+                                    <label for="mobile"><i class="fas fa-mobile-alt text-primary me-2"></i>Your Mobile</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="doctor" name="doctor_id" required="true">
+                                        <option selected disabled value="">Choose Doctor</option>
+                                        {% for doctor in doctorview %}
+                                        <option value="{{ doctor.id }}">{{ doctor.admin.first_name }} {{ doctor.admin.last_name }} ({{ doctor.specialization_id.sname }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="doctor"><i class="fas fa-user-md text-primary me-2"></i>Select Doctor</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="appointment_type" name="appointment_type" required="true">
+                                        <option selected disabled value="">Choose Appointment Type</option>
+                                        <option value="offline">In-Person Visit</option>
+                                        <option value="online">Online Consultation</option>
+                                    </select>
+                                    <label for="appointment_type"><i class="fas fa-clinic-medical text-primary me-2"></i>Appointment Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="appointmentDate" name="date_of_appointment" required="true">
+                                    <label for="appointmentDate"><i class="fas fa-calendar-alt text-primary me-2"></i>Appointment Date</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="time" class="form-control" id="appointmentTime" name="time_of_appointment" step="60" required="true">
+                                    <label for="appointmentTime"><i class="fas fa-clock text-primary me-2"></i>Appointment Time</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Describe your problem" id="message" name="additional_msg" style="height: 120px"></textarea>
+                                    <label for="message"><i class="fas fa-comment-medical text-primary me-2"></i>Describe Your Problem</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100 py-3 fw-bold" type="submit">
+                                    <i class="fas fa-calendar-check me-2"></i>Book Appointment Now
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Appointment End -->
+
+<!-- Why Choose Us Section -->
+<div class="container-fluid py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mx-auto mb-5" style="max-width: 600px;">
+            <h5 class="d-inline-block text-primary text-uppercase border-bottom border-primary border-2 pb-1">Why Choose Us</h5>
+            <h2 class="mb-4 fw-bold">We Provide The Best Healthcare Services</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item bg-white rounded-lg shadow-sm p-4 text-center h-100">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-4" style="width: 75px; height: 75px;">
+                        <i class="fa fa-user-md text-white fa-2x"></i>
+                    </div>
+                    <h4 class="mb-3 fw-bold">Qualified Doctors</h4>
+                    <p class="mb-4">Our team consists of experienced and board-certified doctors dedicated to providing the highest quality care.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item bg-white rounded-lg shadow-sm p-4 text-center h-100">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-4" style="width: 75px; height: 75px;">
+                        <i class="fa fa-procedures text-white fa-2x"></i>
+                    </div>
+                    <h4 class="mb-3 fw-bold">Modern Equipment</h4>
+                    <p class="mb-4">We utilize state-of-the-art medical equipment and technology to ensure accurate diagnosis and effective treatment.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="service-item bg-white rounded-lg shadow-sm p-4 text-center h-100">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-4" style="width: 75px; height: 75px;">
+                        <i class="fa fa-heartbeat text-white fa-2x"></i>
+                    </div>
+                    <h4 class="mb-3 fw-bold">Patient-Centered Care</h4>
+                    <p class="mb-4">We prioritize your health and comfort, providing personalized care plans tailored to your specific needs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Why Choose Us End -->
+
+<style>
+    .hover-lift {
+        transition: transform 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-5px);
+    }
+    .form-floating > label {
+        padding-left: 1.75rem;
+    }
+    .appointment-form .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .appointment-form .form-floating > .form-control:focus ~ label,
+    .appointment-form .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        padding-left: 0.75rem;
+    }
+</style>
+
+{% endblock %}
