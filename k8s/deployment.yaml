@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docapp
+  namespace: doctor-system
+  labels:
+    app: docapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: docapp
+  template:
+    metadata:
+      labels:
+        app: docapp
+    spec:
+      containers:
+        - name: docapp
+          image: docker.io/mokshitgupta/docapp:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: docapp-config
+            - secretRef:
+                name: docapp-secret
+          readinessProbe:
+            httpGet:
+              path: /healthz/
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz/
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
