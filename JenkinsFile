@@ -23,27 +23,35 @@ pipeline {
             }
         }
 
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Dependency Scan - OWASP') {
             steps {
                 sh 'dependency-check.sh --scan . --format ALL --out dependency-check-report'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
                     IMAGE_TAG = "${BUILD_NUMBER}"
-                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                    docker.withRegistry("https://${REGISTRY}", "dockerhub-cred") {
+                        def app = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                        app.push()
+                    }
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Image Scan - Trivy') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
-                }
+                sh "trivy image --exit-code 1 --severity HIGH,CRITICAL ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} || true"
             }
         }
 
@@ -69,10 +77,15 @@ pipeline {
         always {
             archiveArtifacts artifacts: '**/dependency-check-report/*.*', allowEmptyArchive: true
         }
+        success {
+            mail to: 'mokshit029@example.com',
+                 subject: " SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Build & Deployment pipeline executed successfully. Check ArgoCD for deployment status."
+        }
         failure {
             mail to: 'mokshit029@example.com',
-                 subject: "Build Failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Check Jenkins for details."
+                 subject: " FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Build failed. Please check Jenkins logs for details."
         }
     }
 }
