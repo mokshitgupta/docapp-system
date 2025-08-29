@@ -85,10 +85,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build & Push Completed Successfully"
+            echo " Build & Push Completed Successfully"
         }
         failure {
-            echo "❌ Build Failed. Check logs."
+            echo " Build Failed. Check logs."
         }
     }
 }
