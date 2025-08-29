@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: docapp
+  name: docappsystem
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:mokshitgupta/docapp-gitops.git'
+    repoURL: 'https://github.com/mokshitgupta/docapp-gitops.git'
     targetRevision: main
-    path: k8s
+    path: . 
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: docapp
