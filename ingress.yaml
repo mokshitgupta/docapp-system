@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docapp-ingress
+  namespace: doctor-system
+spec:
+  rules:
+    - host: docapp.local   # replace with your domain
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: docapp-service
+              port:
+                number: 80

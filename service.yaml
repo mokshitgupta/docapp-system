@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: docapp-service
+  namespace: doctor-system
+spec:
+  selector:
+    app: docapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP
